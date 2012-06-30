@@ -77,21 +77,21 @@
 			$sinceID = $ti['tweetid'];
 		}
 		
-    $old_tweet_ids = $db->query("SELECT tweet_id FROM old_tweets WHERE tweet_id NOT IN ( SELECT tweetid FROM tn_tweets) LIMIT 25");
-    if ($db->numRows($old_tweet_ids) > 0) {
-      for ($i = 0; $i < $db->numRows($old_tweet_ids); $i++) {
-        $tw = $db->fetch($old_tweet_ids);
-        $id = $tw['tweet_id'];
+		$old_tweet_ids = $db->query("SELECT tweet_id FROM old_tweets WHERE tweet_id NOT IN ( SELECT tweetid FROM tn_tweets) LIMIT 25");
+		if ($db->numRows($old_tweet_ids) > 0) {
+			for ($i = 0; $i < $db->numRows($old_tweet_ids); $i++) {
+				$tw = $db->fetch($old_tweet_ids);
+				$id = $tw['tweet_id'];
 
-        $path = "1/statuses/show/".$id.".json?trim_user=t&include_entities=t&include_my_retweet=t";
-        echo l("Retrieving tweet ".$id."\n");
-        $tweet = $twitterApi->query($path);
-        // Create tweet element and add to list
-        $tweets[] = $twitterApi->transformTweet($tweet);
-      }
-    } else {
-      echo l("No old tweets found to import");
-    }
+				$path = "1/statuses/show/".$id.".json?trim_user=t&include_entities=t&include_my_retweet=t";
+				echo l("Retrieving tweet ".$id."\n");
+				$tweet = $twitterApi->query($path);
+				// Create tweet element and add to list
+				$tweets[] = $twitterApi->transformTweet($tweet);
+			}
+		} else {
+			echo l("No old tweets found to import");
+		}
 		
 		if(count($tweets) > 0){
 			// Ascending sort, oldest first
