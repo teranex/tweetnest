@@ -1,4 +1,14 @@
 <?php
+
+/**
+ * If you are lucky enough to have a list with all your tweet id's you can
+ * import all your tweets (even those older than 3200 tweets ago).
+ * To do so, create a table in the database named `old_tweets` with one column
+ * `tweet_id`. Insert all your tweet id's in that table and run this script.
+ * The script will fetch 25 tweets which are not yet imported every time it is
+ * run
+ */
+
 	// TWEET NEST
 	// Load tweets
 	
@@ -41,16 +51,6 @@
 		}
 	}
 	
-	// Define import routines
-	// function totalTweets($p){
-	// 	global $twitterApi;
-	// 	$p = trim($p);
-	// 	if(!$twitterApi->validateUserParam($p)){ return false; }
-	// 	$data = $twitterApi->query("1/users/show.json?" . $p);
-	// 	if(is_array($data) && $data[0] === false){ dieout(l(bad("Error: " . $data[1] . "/" . $data[2]))); }
-	// 	return $data->statuses_count;
-	// }
-	// 
 	function importOldTweets($p){
 		global $twitterApi, $db, $config, $access, $search;
 		$p = trim($p);
@@ -92,43 +92,6 @@
     } else {
       echo l("No old tweets found to import");
     }
-		
-		
-		// // Retrieve tweets
-		// do {
-		// 	// Determine path to Twitter timeline resource
-		// 	$path =	"1/statuses/user_timeline.json?" . $p . // <-- user argument
-		// 			"&include_rts=true&include_entities=true&count=" . $maxCount .
-		// 			($sinceID ? "&since_id=" . $sinceID : "") . ($maxID ? "&max_id=" . $maxID : "");
-		// 	// Announce
-		// 	echo l("Retrieving page <strong>#" . $page . "</strong>: <span class=\"address\">" . ls($path) . "</span>\n");
-		// 	// Get data
-		// 	$data = $twitterApi->query($path);
-		// 	// Drop out on connection error
-		// 	if(is_array($data) && $data[0] === false){ dieout(l(bad("Error: " . $data[1] . "/" . $data[2]))); }
-		// 	
-		// 	// Start parsing
-		// 	echo l("<strong>" . ($data ? count($data) : 0) . "</strong> new tweets on this page\n");
-		// 	if(!empty($data)){
-		// 		echo l("<ul>");
-		// 		foreach($data as $i => $tweet){
-		// 			// Shield against duplicate tweet from max_id
-		// 			if(!IS64BIT && $i == 0 && $maxID == $tweet->id_str){ unset($data[0]); continue; }
-		// 			// List tweet
-		// 			echo l("<li>" . $tweet->id_str . " " . $tweet->created_at . "</li>\n");
-		// 			// Create tweet element and add to list
-		// 			$tweets[] = $twitterApi->transformTweet($tweet);
-		// 			// Determine new max_id
-		// 			$maxID    = $tweet->id_str;
-		// 			// Subtracting 1 from max_id to prevent duplicate, but only if we support 64-bit integer handling
-		// 			if(IS64BIT){
-		// 				$maxID = (int)$tweet->id - 1;
-		// 			}
-		// 		}
-		// 		echo l("</ul>");
-		// 	}
-		// 	$page++;
-		// } while(!empty($data));
 		
 		if(count($tweets) > 0){
 			// Ascending sort, oldest first
