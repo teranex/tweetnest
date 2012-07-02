@@ -77,7 +77,7 @@
 			$sinceID = $ti['tweetid'];
 		}
 		
-		$old_tweet_ids = $db->query("SELECT tweet_id FROM old_tweets WHERE tweet_id NOT IN ( SELECT tweetid FROM tn_tweets) LIMIT 25");
+		$old_tweet_ids = $db->query("SELECT tweet_id FROM old_tweets WHERE tweet_id NOT IN ( SELECT tweetid FROM tn_tweets) AND tried IS NULL LIMIT 25");
 		if ($db->numRows($old_tweet_ids) > 0) {
 			for ($i = 0; $i < $db->numRows($old_tweet_ids); $i++) {
 				$tw = $db->fetch($old_tweet_ids);
@@ -88,6 +88,7 @@
 				$tweet = $twitterApi->query($path);
 				// Create tweet element and add to list
 				$tweets[] = $twitterApi->transformTweet($tweet);
+				$db->query("UPDATE old_tweets SET tried = ".time()." WHERE tweet_id = '".$id."'");
 			}
 		} else {
 			echo l("No old tweets found to import");
