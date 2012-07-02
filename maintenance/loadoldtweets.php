@@ -102,20 +102,22 @@
 			echo l("Inserting into DB...\n");
 			$error = false;
 			foreach($tweets as $tweet){
-				$q = $db->query($twitterApi->insertQuery($tweet));
-				if(!$q){
-					dieout(l(bad("DATABASE ERROR: " . $db->error())));
+				if ($tweet['tweetid'] != '') {
+					$q = $db->query($twitterApi->insertQuery($tweet));
+					if(!$q){
+						dieout(l(bad("DATABASE ERROR: " . $db->error())));
+					}
+					$text = $tweet['text'];
+					$te   = $tweet['extra'];
+					if(is_string($te)){ $te = @unserialize($tweet['extra']); }
+					if(is_array($te)){
+						// Because retweets might get cut off otherwise
+						$text = (array_key_exists("rt", $te) && !empty($te['rt']) && !empty($te['rt']['screenname']) && !empty($te['rt']['text']))
+							? "RT @" . $te['rt']['screenname'] . ": " . $te['rt']['text']
+							: $tweet['text'];
+					}
+					$search->index($db->insertID(), $text);
 				}
-				$text = $tweet['text'];
-				$te   = $tweet['extra'];
-				if(is_string($te)){ $te = @unserialize($tweet['extra']); }
-				if(is_array($te)){
-					// Because retweets might get cut off otherwise
-					$text = (array_key_exists("rt", $te) && !empty($te['rt']) && !empty($te['rt']['screenname']) && !empty($te['rt']['text']))
-						? "RT @" . $te['rt']['screenname'] . ": " . $te['rt']['text']
-						: $tweet['text'];
-				}
-				$search->index($db->insertID(), $text);
 			}
 			echo !$error ? l(good("Done!\n")) : "";
 		} else {
