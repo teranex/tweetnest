@@ -88,7 +88,7 @@
 				$tweet = $twitterApi->query($path);
 				// Create tweet element and add to list
 				$tweets[] = $twitterApi->transformTweet($tweet);
-				$db->query("UPDATE old_tweets SET tried = ".time()." WHERE tweet_id = '".$id."'");
+				$db->query("UPDATE old_tweets SET tried = '".time()."' WHERE tweet_id = '".$id."'");
 			}
 		} else {
 			echo l("No old tweets found to import");
